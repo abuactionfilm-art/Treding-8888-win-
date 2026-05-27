@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8888 Trading - Premium Terminal Node</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-main: #0c0e12;
+            --bg-card: #161a22;
+            --bg-input: #1f2633;
+            --primary: #f0b90b;
+            --primary-hover: #dfaa08;
+            --success: #0ecb81;
+            --danger: #f6465d;
+            --text-main: #eaecef;
+            --text-muted: #848e9c;
+            --border: #2b3139;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            padding-bottom: 90px;
+            overflow-x: hidden;
+        }
+
+        .page-route {
+            display: none;
+            padding: 20px;
+            max-width: 480px;
+            margin: 0 auto;
+            animation: screenRouteFade 0.22s ease-out;
+        }
+
+        .page-route.active {
+            display: block !important;
+        }
+
+        @keyframes screenRouteFade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-card {
+            margin-top: 40px;
+            padding: 35px 24px;
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+            text-align: center;
+        }
+
+        .auth-brand {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 1.5px;
+            margin-bottom: 4px;
+        }
+
+        .auth-tagline {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .input-wrapper {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-wrapper label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .input-wrapper .field-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper .field-box i {
+            position: absolute;
+            left: 14px;
+            color: var(--text-muted);
+        }
+
+        .input-wrapper input, .input-wrapper select {
+            width: 100%;
+            padding: 15px 15px 15px 42px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .input-wrapper input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-action-trigger {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .btn-action-trigger:hover { background: var(--primary-hover); }
+
+        .auth-router-toggle {
+            margin-top: 22px;
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .auth-router-toggle span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .promo-bonus-box {
+            background: linear-gradient(135deg, #f0b90b 0%, #f8d147 100%);
+            color: #000;
+            border-radius: 14px;
+            padding: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+
+        .promo-bonus-box button {
+            background: #0c0e12;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .portfolio-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 26px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .portfolio-metrics-value {
+            font-size: 42px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 24px;
+        }
+
+        .portfolio-quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .btn-quick {
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            color: #fff;
+        }
+        .btn-quick.dep { background: var(--success); }
+        .btn-quick.wd { background: var(--danger); }
+
+        .market-graph-card {
+            background: #11141a;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .live-candlestick-viewport {
+            height: 150px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            gap: 6px;
+            overflow: hidden;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .candle-stick-node {
+            width: 14px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        .candle-stick-node .wick-line { position: absolute; width: 2px; height: 100%; background: inherit; }
+        .candle-stick-node .body-fill { position: absolute; width: 100%; border-radius: 2px; }
+        .candle-stick-node.bullish { background: var(--success); }
+        .candle-stick-node.bearish { background: var(--danger); }
+
+        .catalog-container { display: flex; flex-direction: column; gap: 14px; }
+        .product-inventory-node {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-purchase-node {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .african-subscription-matrix {
+            max-height: 180px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-input);
+            margin-bottom: 20px;
+            padding: 6px;
+        }
+
+        .country-bank-node-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 4px;
+        }
+
+        .country-bank-node-item.selected {
+            background: rgba(240,185,11,0.08);
+            border: 1px solid var(--primary);
+        }
+
+        .country-avatar-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #2b3139;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 12px;
+        }
+
+        .caution-info-plate {
+            background: rgba(240, 185, 11, 0.07);
+            border-left: 4px solid var(--primary);
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #f3c236;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .clipboard-display-wrapper {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .ledger-wrapper { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 10px; }
+        .ledger-row-node { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+
+        .admin-terminal-plate { background: var(--bg-card); border: 1px solid var(--primary); border-radius: 14px; padding: 18px; margin-bottom: 22px; }
+        .admin-data-table-container { width: 100%; overflow-x: auto; background: #090b0e; border-radius: 10px; border: 1px solid var(--border); margin-top: 8px; margin-bottom: 20px; }
+        .admin-data-matrix-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+        .admin-data-matrix-table th, .admin-data-matrix-table td { padding: 12px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+        .admin-data-matrix-table th { background: #171b22; color: var(--primary); }
+
+        .docked-bottom-bar-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            align-items: center;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .docked-bottom-bar-nav.admin-active-grid { grid-template-columns: repeat(6, 1fr) !important; }
+        .dock-tab-action-item { color: var(--text-muted); cursor: pointer; display: flex; flex-direction: column; font-size: 11px; gap: 4px; }
+        .dock-tab-action-item i { font-size: 20px; }
+        .dock-tab-action-item.active { color: var(--primary); }
+
+        .toast-notification-banner {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            background: #1c212b;
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 10000;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="runtimeToast" class="toast-notification-banner">
+        <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px;" id="toastTitle">Alert Notification</div>
+        <div style="font-size: 12px; color: var(--text-muted);" id="toastMessage">Updates trace...</div>
+    </div>
+
+    <div id="route-auth" class="page-route active">
+        <div class="auth-card">
+            <div class="auth-brand">8888 TRADING</div>
+            <div id="auth-view-subtitle" class="auth-tagline">Sign Up to initialize your secure dashboard node</div>
+            
+            <div class="input-wrapper" id="auth-fullname-wrapper">
+                <label>Full Legal Name</label>
+                <div class="field-box">
+                    <i class="fa-regular fa-user"></i>
+                    <input type="text" id="field-auth-name" placeholder="Enter full name">
+                </div>
+            </div>
+
+            <div class="input-wrapper">
+                <label>Phone Number</label>
+                <div class="field-box">
+                    <i class="fa-solid fa-phone"></i>
+                    <input type="tel" id="field-auth-phone" placeholder="e.g. 0911223344">
+                </div>
+            </div>
+
+            <div class="input-wrapper">
+                <label>Password</label>
+                <div class="field-box">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="field-auth-pass" placeholder="Enter account password">
+                </div>
+            </div>
+
+            <button class="btn-action-trigger" id="btn-auth-submit" onclick="processGatewayAuthentication()">Sign Up & Initialize</button>
+            
+            <div class="auth-router-toggle" id="auth-view-switcher" onclick="toggleAuthenticationViewMode()">
+                Already registered? <span>Log In Instead</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="route-home" class="page-route">
+        <div class="app-header">
+            <div>
+                <div style="font-size: 12px; color: var(--text-muted);">Trading Workspace</div>
+                <div style="font-size: 16px; font-weight: 700; color: var(--primary);" id="display-profile-user">Trader Node</div>
+            </div>
+            <div id="kyc-badge-status" style="font-size: 12px; padding: 6px 12px; background: rgba(240,185,11,0.1); color: var(--primary); border-radius: 20px; font-weight: 600;">
+                <i class="fa-solid fa-triangle-exclamation"></i> Unverified 18+
+            </div>
+        </div>
+
+        <div class="promo-bonus-box" id="registration-bonus-node">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <i class="fa-solid fa-box-open" style="font-size: 26px;"></i>
+                <div>
+                    <div style="font-weight: 700; font-size: 14px;">Claim Sign Up Bonus</div>
+                    <div style="font-size: 11px; opacity: 0.85;">Instant allocation of $1.50</div>
+                </div>
+            </div>
+            <button onclick="claimStartupCapitalReward()">Claim</button>
+        </div>
+
+        <div class="portfolio-card">
+            <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">Total Balance</div>
+            <div class="portfolio-metrics-value">$<span id="display-usd-balance">0.00</span></div>
+            <div class="portfolio-quick-actions">
+                <button class="btn-quick dep" onclick="navigateToSelectedScreen('deposit')">Recharge</button>
+                <button class="btn-quick wd" onclick="navigateToSelectedScreen('withdraw')">Withdrawal</button>
+            </div>
+        </div>
+
+        <div class="market-graph-card">
+            <div style="display:flex; justify-content:space-between; margin-bottom:14px;">
+                <div style="font-size:13px; font-weight:600;">Realtime Volatility Chart</div>
+                <div style="font-weight:700;" id="live-crypto-ticker-price" class="txt-success">$64,250.00</div>
+            </div>
+            <div class="live-candlestick-viewport" id="candlestick-container-viewport"></div>
+        </div>
+
+        <div style="font-size: 15px; font-weight:700; margin-bottom:12px;">Premium Trading Products</div>
+        <div class="catalog-container" id="investment-catalog-grid"></div>
+    </div>
+
+    <div id="route-verify" class="page-route">
+        <div style="font-size:16px; font-weight:700; margin-bottom:14px;"><i class="fa-solid fa-user-check" style="color:var(--primary)"></i> Trader Age Verification</div>
+        <div class="caution-info-plate">
+            <strong>System Regulation Notice:</strong> All active users must be 18+ to unlock withdrawal and unlimited trade products execution.
+        </div>
+        <div class="auth-card" style="margin-top:0; text-align:left; background:var(--bg-card);">
+            <div class="input-wrapper">
+                <label>Full Name</label>
+                <div class="field-box"><i class="fa-solid fa-signature"></i><input type="text" id="kyc-fullname" placeholder="Legal full name"></div>
+            </div>
+            <div class="input-wrapper">
+                <label>Age (Years)</label>
+                <div class="field-box"><i class="fa-solid fa-cake-candles"></i><input type="number" id="kyc-age" placeholder="Must be 18 or older"></div>
+            </div>
+            <div class="input-wrapper">
+                <label>Gender</label>
+                <div class="field-box">
+                    <i class="fa-solid fa-venus-mars"></i>
+                    <select id="kyc-gender">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-wrapper">
+                <label>Confirm Password</label>
+                <div class="field-box"><i class="fa-solid fa-key"></i><input type="password" id="kyc-password" placeholder="Confirm active account password"></div>
+            </div>
+            <button class="btn-action-trigger" onclick="executeKycVerificationForm()">Verify Credentials</button>
+        </div>
+    </div>
+
+    <div id="route-deposit" class="page-route">
+        <div style="font-size:16px; font-weight:700; margin-bottom:14px;"><i class="fa-solid fa-wallet" style="color:var(--success)"></i> Deposit / Recharge</div>
+        <div class="caution-info-plate">
+            <strong>Warning:</strong> Copy the system account. Complete the local deposit within 20 minutes, then paste the full SMS text confirmation block and specify the amount. Conversion index: 1 USD = 150 ETB.
+        </div>
+
+        <label style="font-size:12px; color:var(--text-muted); font-weight:600; display:block; margin-bottom:6px;">Select Pan-African Bank (53 Countries Available)</label>
+        <div class="african-subscription-matrix" id="deposit-african-bank-picker"></div>
+
+        <div class="clipboard-display-wrapper">
+            <div>
+                <div style="font-size:11px; color:var(--text-muted);">Admin Target Account Address</div>
+                <div style="font-size:16px; font-weight:700; color:var(--primary);" id="global-admin-account-number">1000705884987</div>
+            </div>
+            <button class="btn-action-trigger" style="width:auto; padding:8px 14px; font-size:12px;" onclick="copySystemAdminDepositAddress()">Copy</button>
+        </div>
+
+        <div class="input-wrapper">
+            <label>Amount in Local Fiat (ETB Metric)</label>
+            <div class="field-box"><i class="fa-solid fa-money-bill-wave"></i><input type="number" id="input-dep-fiat" oninput="runLiveFiatConversionMath()" placeholder="Enter fiat value"></div>
+        </div>
+        <div class="input-wrapper">
+            <label>Resulting Balance Allocation ($ USD Value)</label>
+            <div class="field-box"><i class="fa-solid fa-dollar-sign"></i><input type="text" id="input-dep-usd-conversion" style="color:var(--primary); font-weight:700;" value="$0.00" readonly></div>
+        </div>
+        <div class="input-wrapper">
+            <label>Transaction Confirmation SMS String Block</label>
+            <div class="field-box"><i class="fa-solid fa-receipt"></i><input type="text" id="input-dep-sms-receipt" placeholder="Paste verification code/SMS snippet"></div>
+        </div>
+        <button class="btn-action-trigger" onclick="dispatchDepositInvoiceToPipeline()">Verify Deposit Transaction</button>
+    </div>
+
+    <div id="route-withdraw" class="page-route">
+        <div style="font-size:16px; font-weight:700; margin-bottom:14px;"><i class="fa-solid fa-money-bill-transfer" style="color:var(--danger)"></i> Liquidate Settlement</div>
+        <div class="caution-info-plate" style="backgrou
